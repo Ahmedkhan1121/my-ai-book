@@ -1,6 +1,6 @@
 ---
 id: ch4-digital-twin-simulation
-title: Digital Twin Simulation (Gazebo + Isaac)
+title: "Digital Twin Simulation (Gazebo + Isaac)"
 sidebar_label: Chapter 4
 chapter_number: 4
 learning_objectives:

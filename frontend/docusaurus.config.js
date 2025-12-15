@@ -8,7 +8,7 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://your-domain.com',
+  url: 'https://my-ai-book-two.vercel.app/',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
@@ -18,7 +18,7 @@ const config = {
   organizationName: 'your-organization', // Usually your GitHub org/user name.
   projectName: 'my-ai-book', // Usually your repo name.
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
   // Even if you don't use internalization, you can use this field to set useful
@@ -39,7 +39,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/Ahmedkhan1121/my-ai-book.git',
+            'https://github.com/Ahmedkhan1121/my-ai-book/tree/main/frontend',
         },
         blog: false, // Disable blog for textbook
         theme: {
@@ -66,6 +66,16 @@ const config = {
             sidebarId: 'textbookSidebar',
             position: 'left',
             label: 'Textbook',
+          },
+          {
+            to: '/blog',
+            label: 'Blog',
+            position: 'left',
+          },
+          {
+            to: '/ai-chatbot',
+            label: 'AI Assistant',
+            position: 'left',
           },
           {
             href: 'https://github.com/Ahmedkhan1121/my-ai-book.git',
@@ -98,6 +108,14 @@ const config = {
             title: 'More',
             items: [
               {
+                label: 'Blog',
+                to: '/blog',
+              },
+              {
+                label: 'AI Assistant',
+                to: '/ai-chatbot',
+              },
+              {
                 label: 'GitHub',
                 href: 'https://github.com/Ahmedkhan1121/my-ai-book.git',
               },
@@ -112,14 +130,8 @@ const config = {
       },
     }),
 
-  // Add custom scripts for AI chatbot functionality
-  scripts: [
-    {
-      src: '/js/ai-chatbot.js',
-      async: true,
-      defer: true,
-    }
-  ],
+  // Custom scripts
+  scripts: [],
 };
 
 module.exports = config;

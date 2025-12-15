@@ -1,6 +1,6 @@
 ---
 id: ch6-capstone-simple-ai-robot-pipeline
-title: Capstone: Simple AI-Robot Pipeline
+title: "Capstone: Simple AI-Robot Pipeline"
 sidebar_label: Chapter 6
 chapter_number: 6
 learning_objectives:

@@ -1,228 +1,265 @@
-// AI Chatbot functionality for the textbook
-class AIChatbot {
-  constructor() {
-    this.isOpen = false;
-    this.initializeChatbot();
-    this.setupTextSelection();
-  }
+import React, { useState, useRef, useEffect } from 'react';
+import Layout from '@theme/Layout';
+import clsx from 'clsx';
+import styles from './ai-chatbot.module.css';
 
-  initializeChatbot() {
-    // Create chatbot UI elements
-    this.createChatbotUI();
+// Sample responses for the chatbot
+const sampleResponses = {
+  'hello': 'Hello! I\'m your AI Robotics assistant. How can I help you today?',
+  'hi': 'Hi there! I\'m here to answer your questions about AI robotics, Physical AI, ROS, humanoid robots, and more.',
+  'what is physical ai': 'Physical AI represents the intersection of artificial intelligence and physical systems. It encompasses the development of intelligent systems that can perceive, reason, and act in the physical world, combining robotics, computer vision, machine learning, and control theory.',
+  'what is ros': 'ROS (Robot Operating System) is a flexible framework for writing robot software. It provides services designed for a heterogeneous computer cluster including hardware abstraction, device drivers, libraries, visualizers, message-passing, package management, and more.',
+  'humanoid robotics': 'Humanoid robotics is a specialized field focusing on creating robots with human-like characteristics and capabilities. These robots are designed to operate in human environments and interact with humans naturally.',
+  'digital twin': 'A digital twin is a virtual representation of a physical object or system that spans its lifecycle. In robotics, it includes physical models, behavioral models, environmental models, sensor models, and control models.',
+  'vision language action': 'Vision-Language-Action (VLA) systems integrate visual perception, natural language understanding, and physical action in a unified framework, enabling robots to understand human instructions and execute appropriate actions.',
+  'capstone project': 'The capstone project demonstrates a complete AI-robot pipeline integrating Physical AI, ROS 2, digital twin simulation, and Vision-Language-Action systems into a working demonstration.',
+  'help': 'I can help you with questions about AI robotics, Physical AI, ROS 2, humanoid robotics, digital twin simulation, Vision-Language-Action systems, and our textbook content. Try asking about any of these topics!',
+  'default': 'I\'m an AI Robotics assistant. I can help you with questions about Physical AI, ROS 2, humanoid robotics, digital twin simulation, and Vision-Language-Action systems. Could you please rephrase your question or ask about one of these topics?'
+};
 
-    // Set up event listeners
-    this.setupEventListeners();
-  }
-
-  createChatbotUI() {
-    // Create the chatbot container
-    const chatbotContainer = document.createElement('div');
-    chatbotContainer.className = 'ai-chatbot-container';
-    chatbotContainer.innerHTML = `
-      <button class="ai-chatbot-button" id="chatbotToggle">💬</button>
-      <div class="ai-chatbot-panel" id="chatbotPanel">
-        <div class="chat-header">
-          <strong>AI Assistant</strong>
-        </div>
-        <div class="chat-messages" id="chatMessages">
-          <div class="message bot-message">
-            Hello! I'm your AI assistant for the Physical AI & Humanoid Robotics textbook.
-            Ask me questions about any chapter content, and I'll provide answers based on the textbook material.
-          </div>
-        </div>
-        <div class="chat-input">
-          <input type="text" id="chatInput" placeholder="Ask a question about the textbook..." />
-          <button id="chatSend">Send</button>
-        </div>
+function ChatHeader() {
+  return (
+    <header className={clsx('hero hero--primary', styles.heroBanner)}>
+      <div className="container">
+        <h1 className="hero__title">AI Robotics Assistant</h1>
+        <p className="hero__subtitle">Ask questions about Physical AI, Robotics, ROS 2, and more</p>
       </div>
-    `;
-
-    document.body.appendChild(chatbotContainer);
-  }
-
-  setupEventListeners() {
-    const toggleButton = document.getElementById('chatbotToggle');
-    const chatPanel = document.getElementById('chatPanel');
-    const chatInput = document.getElementById('chatInput');
-    const chatSend = document.getElementById('chatSend');
-
-    // Toggle chatbot panel
-    toggleButton.addEventListener('click', () => {
-      this.toggleChatbot();
-    });
-
-    // Send message on button click
-    chatSend.addEventListener('click', () => {
-      this.sendMessage();
-    });
-
-    // Send message on Enter key
-    chatInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        this.sendMessage();
-      }
-    });
-  }
-
-  toggleChatbot() {
-    const chatPanel = document.getElementById('chatbotPanel');
-    this.isOpen = !this.isOpen;
-
-    if (this.isOpen) {
-      chatPanel.classList.add('open');
-    } else {
-      chatPanel.classList.remove('open');
-    }
-  }
-
-  async sendMessage() {
-    const chatInput = document.getElementById('chatInput');
-    const message = chatInput.value.trim();
-
-    if (!message) return;
-
-    // Add user message to chat
-    this.addMessage(message, 'user');
-    chatInput.value = '';
-
-    // Show typing indicator
-    this.addMessage('Thinking...', 'bot', true);
-
-    try {
-      // Call the backend API to get AI response
-      const response = await this.getAIResponse(message);
-
-      // Remove typing indicator and add actual response
-      this.removeTypingIndicator();
-      this.addMessage(response, 'bot');
-    } catch (error) {
-      this.removeTypingIndicator();
-      this.addMessage('Sorry, I encountered an error processing your request.', 'bot');
-    }
-  }
-
-  async getAIResponse(userMessage) {
-    // In a real implementation, this would call the backend API
-    // For now, we'll simulate a response
-    try {
-      const response = await fetch('/api/query', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: userMessage,
-          session_id: this.getSessionId(),
-          include_citations: true
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data.response;
-    } catch (error) {
-      console.error('Error getting AI response:', error);
-      return "I'm having trouble connecting to the AI service. Please try again later.";
-    }
-  }
-
-  addMessage(text, sender, isTyping = false) {
-    const chatMessages = document.getElementById('chatMessages');
-    const messageDiv = document.createElement('div');
-
-    messageDiv.className = `message ${sender}-message`;
-    if (isTyping) {
-      messageDiv.id = 'typing-indicator';
-      messageDiv.innerHTML = `<em>${text}</em>`;
-    } else {
-      messageDiv.textContent = text;
-    }
-
-    chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-
-  removeTypingIndicator() {
-    const typingIndicator = document.getElementById('typing-indicator');
-    if (typingIndicator) {
-      typingIndicator.remove();
-    }
-  }
-
-  getSessionId() {
-    // Simple session ID generation
-    if (!localStorage.getItem('sessionId')) {
-      const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('sessionId', sessionId);
-    }
-    return localStorage.getItem('sessionId');
-  }
-
-  setupTextSelection() {
-    // Create the text selection popup
-    this.createTextSelectionPopup();
-
-    // Set up the selection event listener
-    document.addEventListener('mouseup', this.handleTextSelection.bind(this));
-  }
-
-  createTextSelectionPopup() {
-    const popup = document.createElement('div');
-    popup.className = 'text-selection-popup';
-    popup.id = 'textSelectionPopup';
-    popup.textContent = 'Ask AI';
-    popup.title = 'Ask AI about selected text';
-
-    popup.addEventListener('click', this.handlePopupClick.bind(this));
-
-    document.body.appendChild(popup);
-    this.popup = popup;
-  }
-
-  handleTextSelection() {
-    const selectedText = window.getSelection().toString().trim();
-
-    if (selectedText) {
-      // Show the popup near the selection
-      const range = window.getSelection().getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-
-      this.popup.style.top = (rect.top - 40) + 'px';
-      this.popup.style.left = (rect.left + rect.width/2 - 30) + 'px';
-      this.popup.classList.add('visible');
-
-      // Store the selected text for later use
-      this.selectedText = selectedText;
-    } else {
-      this.popup.classList.remove('visible');
-      this.selectedText = null;
-    }
-  }
-
-  handlePopupClick() {
-    if (this.selectedText) {
-      // Show the chatbot if it's not already open
-      if (!this.isOpen) {
-        this.toggleChatbot();
-      }
-
-      // Focus the chat input and pre-fill with selected text context
-      const chatInput = document.getElementById('chatInput');
-      chatInput.focus();
-      chatInput.value = `About this text: "${this.selectedText}". `;
-      chatInput.setSelectionRange(chatInput.value.length, chatInput.value.length);
-
-      // Hide the popup
-      this.popup.classList.remove('visible');
-      this.selectedText = null;
-    }
-  }
+    </header>
+  );
 }
 
-// Initialize the chatbot when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-  new AIChatbot();
-});
+function Message({ text, isUser, timestamp }) {
+  return (
+    <div className={clsx(styles.message, {
+      [styles.userMessage]: isUser,
+      [styles.botMessage]: !isUser
+    })}>
+      <div className={styles.messageContent}>
+        {text}
+      </div>
+      <div className={styles.messageTimestamp}>
+        {timestamp}
+      </div>
+    </div>
+  );
+}
+
+function ChatInput({ onSendMessage, disabled }) {
+  const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (inputValue.trim() && !disabled) {
+      onSendMessage(inputValue.trim());
+      setInputValue('');
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
+  return (
+    <form className={styles.chatInputForm} onSubmit={handleSubmit}>
+      <div className={styles.inputContainer}>
+        <textarea
+          ref={inputRef}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Ask me anything about AI Robotics, Physical AI, ROS 2, Humanoid Robotics..."
+          className={styles.chatInput}
+          disabled={disabled}
+          rows={1}
+        />
+        <button
+          type="submit"
+          className={styles.sendButton}
+          disabled={disabled || !inputValue.trim()}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function ChatSuggestions({ onSuggestionClick }) {
+  const suggestions = [
+    'What is Physical AI?',
+    'Explain ROS 2 fundamentals',
+    'What are humanoid robots?',
+    'How does digital twin simulation work?',
+    'Tell me about Vision-Language-Action systems'
+  ];
+
+  return (
+    <div className={styles.suggestions}>
+      <h3 className={styles.suggestionsTitle}>Try asking:</h3>
+      <div className={styles.suggestionsList}>
+        {suggestions.map((suggestion, index) => (
+          <button
+            key={index}
+            className={styles.suggestionButton}
+            onClick={() => onSuggestionClick(suggestion)}
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ChatPage() {
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      text: 'Hello! I\'m your AI Robotics assistant. How can I help you today?',
+      isUser: false,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }
+  ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const processMessage = (text) => {
+    const lowerText = text.toLowerCase();
+
+    // Check for specific keywords in the message
+    if (lowerText.includes('physical ai') || lowerText.includes('physical ai')) {
+      return sampleResponses['what is physical ai'];
+    } else if (lowerText.includes('ros') || lowerText.includes('robot operating system')) {
+      return sampleResponses['what is ros'];
+    } else if (lowerText.includes('humanoid') || lowerText.includes('human like')) {
+      return sampleResponses['humanoid robotics'];
+    } else if (lowerText.includes('digital twin') || lowerText.includes('simulation')) {
+      return sampleResponses['digital twin'];
+    } else if (lowerText.includes('vision') || lowerText.includes('language') || lowerText.includes('action')) {
+      return sampleResponses['vision language action'];
+    } else if (lowerText.includes('capstone') || lowerText.includes('project')) {
+      return sampleResponses['capstone project'];
+    } else if (lowerText.includes('hello') || lowerText.includes('hi') || lowerText.includes('hey')) {
+      return sampleResponses['hello'];
+    } else if (lowerText.includes('help') || lowerText.includes('what can you do')) {
+      return sampleResponses['help'];
+    }
+
+    // Check for exact matches in sample responses
+    for (const [key, response] of Object.entries(sampleResponses)) {
+      if (lowerText.includes(key) && key !== 'default' && key !== 'help') {
+        return response;
+      }
+    }
+
+    return sampleResponses['default'];
+  };
+
+  const handleSendMessage = (text) => {
+    // Add user message
+    const userMessage = {
+      id: Date.now(),
+      text: text,
+      isUser: true,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
+
+    // Simulate bot response with delay
+    setTimeout(() => {
+      const botResponse = processMessage(text);
+      const botMessage = {
+        id: Date.now() + 1,
+        text: botResponse,
+        isUser: false,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      setMessages(prev => [...prev, botMessage]);
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    handleSendMessage(suggestion);
+  };
+
+  return (
+    <Layout title="AI Robotics Chatbot" description="Interactive AI assistant for AI robotics questions">
+      <ChatHeader />
+      <main className={clsx(styles.chatPage, 'container', 'margin-vert--lg')}>
+        <div className={styles.chatContainer}>
+          <div className={styles.chatMessages}>
+            {messages.map((message) => (
+              <Message
+                key={message.id}
+                text={message.text}
+                isUser={message.isUser}
+                timestamp={message.timestamp}
+              />
+            ))}
+            {isLoading && (
+              <div className={clsx(styles.message, styles.botMessage)}>
+                <div className={styles.messageContent}>
+                  <div className={styles.typingIndicator}>
+                    <div className={styles.typingDot}></div>
+                    <div className={styles.typingDot}></div>
+                    <div className={styles.typingDot}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <div className={styles.chatInputArea}>
+            <ChatSuggestions onSuggestionClick={handleSuggestionClick} />
+            <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
+          </div>
+        </div>
+
+        <div className={styles.infoSection}>
+          <div className={styles.infoCard}>
+            <h3 className={styles.infoTitle}>About This Assistant</h3>
+            <p className={styles.infoText}>
+              This AI Robotics assistant is designed to help you learn about Physical AI,
+              ROS 2, humanoid robotics, digital twin simulation, and Vision-Language-Action systems.
+              Ask questions about any of these topics to get detailed explanations.
+            </p>
+          </div>
+
+          <div className={styles.infoCard}>
+            <h3 className={styles.infoTitle}>Topics Covered</h3>
+            <ul className={styles.topicsList}>
+              <li>• Physical AI fundamentals</li>
+              <li>• ROS 2 architecture and components</li>
+              <li>• Humanoid robotics design principles</li>
+              <li>• Digital twin simulation (Gazebo + Isaac)</li>
+              <li>• Vision-Language-Action systems</li>
+              <li>• AI-robot pipeline integration</li>
+            </ul>
+          </div>
+        </div>
+      </main>
+    </Layout>
+  );
+}
+
+export default ChatPage;
