@@ -39,7 +39,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/your-organization/my-ai-book/tree/main/frontend/',
+            'https://github.com/Ahmedkhan1121/my-ai-book.git',
         },
         blog: false, // Disable blog for textbook
         theme: {
@@ -68,7 +68,7 @@ const config = {
             label: 'Textbook',
           },
           {
-            href: 'https://github.com/your-organization/my-ai-book',
+            href: 'https://github.com/Ahmedkhan1121/my-ai-book.git',
             label: 'GitHub',
             position: 'right',
           },
@@ -99,7 +99,7 @@ const config = {
             items: [
               {
                 label: 'GitHub',
-                href: 'https://github.com/your-organization/my-ai-book',
+                href: 'https://github.com/Ahmedkhan1121/my-ai-book.git',
               },
             ],
           },
@@ -107,8 +107,8 @@ const config = {
         copyright: `Copyright © ${new Date().getFullYear()} Physical AI & Humanoid Robotics — Essentials. Built with Docusaurus.`,
       },
       prism: {
-        theme: require('prism-react-renderer/themes/github'),
-        darkTheme: require('prism-react-renderer/themes/dracula'),
+        // theme: require('prism-react-renderer/themes/github'),
+        // darkTheme: require('prism-react-renderer/themes/dracula'),
       },
     }),
 
