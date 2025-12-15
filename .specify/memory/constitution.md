@@ -1,55 +1,44 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Physical AI & Humanoid Robotics — Essentials Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Simplicity
+Content and implementation must be minimal and focused. Every addition must serve a clear pedagogical purpose. Avoid complexity for its own sake and prioritize clarity over completeness.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Accuracy
+All technical content must be factually correct and up-to-date with current industry standards. Technical implementations (Docusaurus, RAG, ROS 2, etc.) must follow best practices and proven methodologies.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Accessibility
+The textbook and associated tools must be free-tier friendly and lightweight. No heavy GPU usage or resource-intensive operations that would prevent widespread access to the learning materials.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Modularity
+Each chapter and component must be self-contained and independently learnable/testable. Components (UI, RAG, simulation) must be loosely coupled to enable easy maintenance and updates.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Educational Focus
+Every feature must directly contribute to the learning objectives. Tools and technologies should enhance understanding of Physical AI and Humanoid Robotics concepts, not distract from them.
 
-### [PRINCIPLE_6_NAME]
+### VI. RAG Integrity
+The chatbot must only respond with information derived from the textbook content. No hallucinations or external knowledge injection - the RAG system must be strictly bound to the book's text.
 
+## Additional Constraints
 
-[PRINCIPLE__DESCRIPTION]
+- 6 short chapters covering: Introduction to Physical AI, Basics of Humanoid Robotics, ROS 2 Fundamentals, Digital Twin Simulation (Gazebo + Isaac), Vision-Language-Action Systems, Capstone: Simple AI-Robot Pipeline
+- Clean, modern Docusaurus UI optimized for learning
+- Free-tier friendly architecture (Qdrant + Neon + FastAPI for RAG)
+- Lightweight embeddings with minimal computational overhead
+- Optional localization support (Urdu) and personalization features
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Development Workflow
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- All content changes must be validated against learning objectives
+- Technical implementations must pass performance benchmarks for free-tier usage
+- Chapter content must be reviewed by subject matter experts
+- RAG accuracy must be verified against source material
+- Build processes must complete successfully before merging
+- UI changes must maintain responsive design principles
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution serves as the guiding document for all development decisions. All contributors must ensure their work aligns with these principles. Any proposed changes that conflict with these principles must include compelling justification. Amendments require documentation of impact on learning objectives and technical feasibility.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-12-15 | **Last Amended**: 2025-12-15

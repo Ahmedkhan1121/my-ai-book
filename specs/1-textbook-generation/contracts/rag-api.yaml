@@ -1,0 +1,330 @@
+openapi: 3.0.0
+info:
+  title: Textbook RAG API
+  description: API for the AI-Native Textbook with RAG Chatbot
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /api/chapters:
+    get:
+      summary: Get all textbook chapters
+      description: Retrieve a list of all textbook chapters with basic information
+      responses:
+        '200':
+          description: List of textbook chapters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Chapter'
+
+  /api/chapters/{chapterId}:
+    get:
+      summary: Get a specific chapter
+      description: Retrieve the content and details of a specific textbook chapter
+      parameters:
+        - name: chapterId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the chapter
+      responses:
+        '200':
+          description: Chapter details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chapter'
+        '404':
+          description: Chapter not found
+
+  /api/query:
+    post:
+      summary: Submit a query to the RAG system
+      description: Submit a user question and get an AI response based on textbook content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+      responses:
+        '200':
+          description: AI response to the query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '400':
+          description: Invalid query format
+
+  /api/query/text-selection:
+    post:
+      summary: Query about selected text
+      description: Submit a query about selected text content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TextSelectionRequest'
+      responses:
+        '200':
+          description: AI response about the selected text
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+        '400':
+          description: Invalid request format
+
+  /api/quizzes/{chapterId}:
+    get:
+      summary: Get quiz questions for a chapter
+      description: Retrieve quiz questions for a specific chapter
+      parameters:
+        - name: chapterId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the chapter
+      responses:
+        '200':
+          description: Quiz questions for the chapter
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/QuizQuestion'
+        '404':
+          description: Chapter not found
+
+  /api/quizzes/submit:
+    post:
+      summary: Submit quiz answers
+      description: Submit answers to quiz questions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizSubmission'
+      responses:
+        '200':
+          description: Quiz submission result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizResult'
+        '400':
+          description: Invalid submission format
+
+components:
+  schemas:
+    Chapter:
+      type: object
+      required:
+        - chapter_id
+        - title
+        - chapter_number
+        - content
+      properties:
+        chapter_id:
+          type: string
+          description: Unique identifier for the chapter
+        title:
+          type: string
+          description: Title of the chapter
+        chapter_number:
+          type: integer
+          description: Sequential number of the chapter (1-6)
+        content:
+          type: string
+          description: Markdown content of the chapter
+        learning_objectives:
+          type: array
+          items:
+            type: string
+          description: Learning objectives for the chapter
+        word_count:
+          type: integer
+          description: Number of words in the chapter
+
+    QueryRequest:
+      type: object
+      required:
+        - query
+        - session_id
+      properties:
+        query:
+          type: string
+          description: The user's question
+        session_id:
+          type: string
+          description: User session identifier
+        include_citations:
+          type: boolean
+          description: Whether to include citations in the response (default: true)
+
+    QueryResponse:
+      type: object
+      required:
+        - response
+        - citations
+        - query_id
+      properties:
+        response:
+          type: string
+          description: The AI-generated response to the query
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citation'
+          description: References to textbook content used in the response
+        query_id:
+          type: string
+          description: Unique identifier for this query
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Confidence level of the response
+
+    Citation:
+      type: object
+      required:
+        - chapter_id
+        - chapter_title
+        - section
+      properties:
+        chapter_id:
+          type: string
+          description: ID of the referenced chapter
+        chapter_title:
+          type: string
+          description: Title of the referenced chapter
+        section:
+          type: string
+          description: Specific section referenced
+        content_preview:
+          type: string
+          description: Brief preview of the cited content
+
+    TextSelectionRequest:
+      type: object
+      required:
+        - selected_text
+        - query
+        - session_id
+      properties:
+        selected_text:
+          type: string
+          description: The text that was selected by the user
+        query:
+          type: string
+          description: The user's question about the selected text
+        session_id:
+          type: string
+          description: User session identifier
+
+    QuizQuestion:
+      type: object
+      required:
+        - question_id
+        - question_text
+        - question_type
+      properties:
+        question_id:
+          type: string
+          description: Unique identifier for the question
+        question_text:
+          type: string
+          description: The quiz question text
+        question_type:
+          type: string
+          enum: [multiple-choice, short-answer, true-false]
+          description: Type of the question
+        options:
+          type: array
+          items:
+            type: string
+          description: Options for multiple choice questions
+        explanation:
+          type: string
+          description: Explanation of the correct answer
+
+    QuizSubmission:
+      type: object
+      required:
+        - session_id
+        - answers
+      properties:
+        session_id:
+          type: string
+          description: User session identifier
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Answer'
+          description: User's answers to quiz questions
+
+    Answer:
+      type: object
+      required:
+        - question_id
+        - answer_text
+      properties:
+        question_id:
+          type: string
+          description: ID of the question being answered
+        answer_text:
+          type: string
+          description: User's answer
+
+    QuizResult:
+      type: object
+      required:
+        - submission_id
+        - score
+        - results
+      properties:
+        submission_id:
+          type: string
+          description: Unique identifier for this submission
+        score:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Overall score percentage
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionResult'
+          description: Results for each question
+
+    QuestionResult:
+      type: object
+      required:
+        - question_id
+        - is_correct
+        - correct_answer
+      properties:
+        question_id:
+          type: string
+          description: ID of the question
+        is_correct:
+          type: boolean
+          description: Whether the answer was correct
+        correct_answer:
+          type: string
+          description: The correct answer
+        user_answer:
+          type: string
+          description: The user's answer
