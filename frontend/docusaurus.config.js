@@ -78,6 +78,11 @@ const config = {
             position: 'left',
           },
           {
+            to: '/dashboard',
+            label: 'Dashboard',
+            position: 'right',
+          },
+          {
             to: '/auth/login',
             label: 'Sign In',
             position: 'right',
@@ -136,7 +141,12 @@ const config = {
     }),
 
   // Custom scripts
-  scripts: [],
+  scripts: [
+    {
+      src: '/js/authNavbar.js',
+      async: true,
+    },
+  ],
 
   // Custom fields for development server configuration
   customFields: {
