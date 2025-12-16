@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import AnimatedSection from '../components/AnimatedSection';
+import AnimatedCard from '../components/AnimatedCard';
 import styles from './blog.module.css';
 
 // Sample blog posts data
@@ -63,39 +66,60 @@ const blogPosts = [
 
 function BlogHeader() {
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
+    <AnimatedSection className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        <h1 className="hero__title">AI Robotics Blog</h1>
-        <p className="hero__subtitle">Stay updated with the latest insights, research, and developments in AI-powered robotics</p>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h1 className="hero__title text-4xl md:text-5xl font-bold mb-4">
+            AI Robotics Blog
+          </h1>
+          <p className="hero__subtitle text-xl md:text-2xl text-gray-700">
+            Stay updated with the latest insights, research, and developments in AI-powered robotics
+          </p>
+        </motion.div>
       </div>
-    </header>
+    </AnimatedSection>
   );
 }
 
-function BlogPostCard({ post }) {
+function BlogPostCard({ post, index }) {
   return (
-    <article className={clsx('margin-bottom--lg', styles.blogPostCard)}>
-      <div className={styles.blogPostHeader}>
-        <h2 className={styles.blogPostTitle}>
-          <a href={`/blog/${post.id}`} className={styles.blogPostLink}>
+    <AnimatedCard
+      delay={index * 0.1}
+      className="p-6 hover:shadow-xl transition-shadow duration-300 mb-6"
+    >
+      <div className="mb-4">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
+          <a
+            href={`/blog/${post.id}`}
+            className="text-blue-600 hover:text-blue-700 transition-colors duration-200"
+          >
             {post.title}
           </a>
         </h2>
-        <div className={styles.blogPostMeta}>
-          <span className={styles.blogPostDate}>{post.date}</span>
-          <span className={styles.blogPostAuthor}>by {post.author}</span>
-          <span className={styles.blogPostReadTime}>{post.readTime}</span>
+        <div className="flex flex-wrap items-center text-sm text-gray-500 mb-3">
+          <span className="mr-4">{post.date}</span>
+          <span className="mr-4">by {post.author}</span>
+          <span>{post.readTime}</span>
         </div>
       </div>
-      <p className={styles.blogPostExcerpt}>{post.excerpt}</p>
-      <div className={styles.blogPostTags}>
+      <p className="text-gray-600 mb-4 leading-relaxed">
+        {post.excerpt}
+      </p>
+      <div className="flex flex-wrap gap-2">
         {post.tags.map((tag, index) => (
-          <span key={index} className={styles.blogPostTag}>
+          <span
+            key={index}
+            className="inline-block bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full"
+          >
             {tag}
           </span>
         ))}
       </div>
-    </article>
+    </AnimatedCard>
   );
 }
 
@@ -103,22 +127,24 @@ function BlogFilter({ selectedCategory, onCategoryChange }) {
   const categories = ['All', 'AI', 'Robotics', 'Humanoid', 'ROS', 'Simulation', 'VLA', 'Development'];
 
   return (
-    <div className={styles.blogFilter}>
-      <h3 className={styles.filterTitle}>Filter by Category</h3>
-      <div className={styles.filterButtons}>
+    <AnimatedCard className="p-6 mb-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter by Category</h3>
+      <div className="flex flex-wrap gap-2">
         {categories.map((category) => (
           <button
             key={category}
-            className={clsx(styles.filterButton, {
-              [styles.filterButtonActive]: selectedCategory === category,
-            })}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
+              selectedCategory === category
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
             onClick={() => onCategoryChange(category)}
           >
             {category}
           </button>
         ))}
       </div>
-    </div>
+    </AnimatedCard>
   );
 }
 
@@ -140,50 +166,60 @@ function BlogPage() {
   return (
     <Layout title="AI Robotics Blog" description="Latest insights and research in AI-powered robotics">
       <BlogHeader />
-      <main className="container margin-vert--lg">
-        <div className={styles.blogPage}>
-          <div className={styles.blogContent}>
-            <div className={styles.blogPosts}>
-              <h2 className={styles.sectionTitle}>Latest Articles</h2>
-              {filteredPosts.length > 0 ? (
-                filteredPosts.map((post) => (
-                  <BlogPostCard key={post.id} post={post} />
-                ))
-              ) : (
-                <div className={styles.noPosts}>
-                  <p>No posts found in this category.</p>
+      <main className="py-12">
+        <div className="container px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-3">
+              <AnimatedSection>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">Latest Articles</h2>
+                {filteredPosts.length > 0 ? (
+                  filteredPosts.map((post, index) => (
+                    <BlogPostCard key={post.id} post={post} index={index} />
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500 text-lg">No posts found in this category.</p>
+                  </div>
+                )}
+              </AnimatedSection>
+            </div>
+
+            <div className="lg:col-span-1">
+              <AnimatedSection>
+                <div className="space-y-6">
+                  <BlogFilter
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={setSelectedCategory}
+                  />
+
+                  <AnimatedCard className="p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">About This Blog</h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      Welcome to our AI Robotics blog! Here you'll find the latest research,
+                      technical insights, and industry updates related to artificial intelligence
+                      and robotics. Our team of experts shares knowledge on topics ranging from
+                      humanoid robotics to ROS development and AI integration.
+                    </p>
+                  </AnimatedCard>
+
+                  <AnimatedCard className="p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Posts</h3>
+                    <ul className="space-y-3">
+                      {blogPosts.slice(0, 3).map((post) => (
+                        <li key={post.id} className="border-b border-gray-100 pb-3 last:border-b-0 last:pb-0">
+                          <a
+                            href={`/blog/${post.id}`}
+                            className="text-blue-600 hover:text-blue-700 hover:underline text-sm block mb-1"
+                          >
+                            {post.title}
+                          </a>
+                          <span className="text-xs text-gray-500">{post.date}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </AnimatedCard>
                 </div>
-              )}
-            </div>
-          </div>
-          <div className={styles.blogSidebar}>
-            <BlogFilter
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-            />
-
-            <div className={styles.sidebarSection}>
-              <h3 className={styles.sidebarTitle}>About This Blog</h3>
-              <p className={styles.sidebarText}>
-                Welcome to our AI Robotics blog! Here you'll find the latest research,
-                technical insights, and industry updates related to artificial intelligence
-                and robotics. Our team of experts shares knowledge on topics ranging from
-                humanoid robotics to ROS development and AI integration.
-              </p>
-            </div>
-
-            <div className={styles.sidebarSection}>
-              <h3 className={styles.sidebarTitle}>Recent Posts</h3>
-              <ul className={styles.recentPosts}>
-                {blogPosts.slice(0, 3).map((post) => (
-                  <li key={post.id} className={styles.recentPostItem}>
-                    <a href={`/blog/${post.id}`} className={styles.recentPostLink}>
-                      {post.title}
-                    </a>
-                    <span className={styles.recentPostDate}>{post.date}</span>
-                  </li>
-                ))}
-              </ul>
+              </AnimatedSection>
             </div>
           </div>
         </div>

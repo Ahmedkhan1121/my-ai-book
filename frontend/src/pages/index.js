@@ -3,75 +3,147 @@ import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import AnimatedSection from '../components/AnimatedSection';
+import AnimatedCard from '../components/AnimatedCard';
+import AnimatedButton from '../components/AnimatedButton';
 import styles from './index.module.css';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
+    <AnimatedSection className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        <h1 className="hero__title">{siteConfig.title}</h1>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/ch1-introduction-to-physical-ai">
-            Read Textbook 📚
-          </Link>
-          <Link
-            className="button button--primary button--lg"
-            to="/blog"
-            style={{ marginLeft: '1rem' }}>
-            Read Blog 📝
-          </Link>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h1 className="hero__title text-4xl md:text-5xl font-bold mb-4">
+            {siteConfig.title}
+          </h1>
+          <p className="hero__subtitle text-xl md:text-2xl mb-8 text-gray-700">
+            {siteConfig.tagline}
+          </p>
+          <div className={styles.buttons}>
+            <AnimatedButton
+              variant="secondary"
+              size="lg"
+              as={Link}
+              to="/docs/ch1-introduction-to-physical-ai"
+              className="mr-4 mb-4 md:mb-0"
+            >
+              Read Textbook 📚
+            </AnimatedButton>
+            <AnimatedButton
+              variant="primary"
+              size="lg"
+              as={Link}
+              to="/blog"
+            >
+              Read Blog 📝
+            </AnimatedButton>
+          </div>
+        </motion.div>
       </div>
-    </header>
+    </AnimatedSection>
   );
 }
 
 function HomepageFeatures() {
+  const features = [
+    {
+      title: 'Physical AI',
+      description: 'Learn about the intersection of artificial intelligence and physical systems.',
+      icon: '🤖'
+    },
+    {
+      title: 'Humanoid Robotics',
+      description: 'Explore the fundamentals of humanoid robot design and control.',
+      icon: '🦾'
+    },
+    {
+      title: 'ROS 2 & Simulation',
+      description: 'Master ROS 2 frameworks and digital twin simulation techniques.',
+      icon: '🔧'
+    }
+  ];
+
   return (
-    <section className={styles.features}>
-      <div className="container">
-        <div className="row">
-          <div className={clsx('col col--4')}>
-            <div className="text--center padding-horiz--md">
-              <h3>Physical AI</h3>
-              <p>Learn about the intersection of artificial intelligence and physical systems.</p>
-            </div>
-          </div>
-          <div className={clsx('col col--4')}>
-            <div className="text--center padding-horiz--md">
-              <h3>Humanoid Robotics</h3>
-              <p>Explore the fundamentals of humanoid robot design and control.</p>
-            </div>
-          </div>
-          <div className={clsx('col col--4')}>
-            <div className="text--center padding-horiz--md">
-              <h3>ROS 2 & Simulation</h3>
-              <p>Master ROS 2 frameworks and digital twin simulation techniques.</p>
-            </div>
-          </div>
+    <AnimatedSection className={styles.features}>
+      <div className="container px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-16">
+          <motion.h2
+            className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            Key Learning Areas
+          </motion.h2>
+          <motion.p
+            className="text-xl text-gray-600 max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            Comprehensive coverage of modern AI and robotics concepts
+          </motion.p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <AnimatedCard
+              key={index}
+              delay={index * 0.1}
+              className="p-8 text-center hover:shadow-xl transition-shadow duration-300"
+            >
+              <div className="text-4xl mb-4">{feature.icon}</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+              <p className="text-gray-600 leading-relaxed">
+                {feature.description}
+              </p>
+            </AnimatedCard>
+          ))}
         </div>
       </div>
-    </section>
+    </AnimatedSection>
   );
 }
 
 function HomepageAIAssistant() {
   return (
-    <section className={styles.aiAssistant}>
-      <div className="container padding-vert--xl text--center">
-        <h2>AI Robotics Assistant</h2>
-        <p>Need help with robotics concepts? Chat with our AI assistant!</p>
-        <Link
-          className="button button--primary button--lg"
-          to="/ai-chatbot">
-          Talk to AI Assistant 🤖
-        </Link>
+    <AnimatedSection className={styles.aiAssistant}>
+      <div className="container px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-12"
+          >
+            <div className="text-5xl mb-6">🤖</div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              AI Robotics Assistant
+            </h2>
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+              Need help with robotics concepts? Chat with our AI assistant powered by textbook knowledge!
+            </p>
+            <AnimatedButton
+              variant="primary"
+              size="lg"
+              as={Link}
+              to="/ai-chatbot"
+            >
+              Talk to AI Assistant 🤖
+            </AnimatedButton>
+          </motion.div>
+        </div>
       </div>
-    </section>
+    </AnimatedSection>
   );
 }
 

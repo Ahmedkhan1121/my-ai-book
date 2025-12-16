@@ -58,7 +58,7 @@ const config = {
         title: 'AI Textbook',
         logo: {
           alt: 'Textbook Logo',
-          src: 'img/logo.svg',
+          src: '/img/logo.svg',
         },
         items: [
           {
@@ -76,6 +76,11 @@ const config = {
             to: '/ai-chatbot',
             label: 'AI Assistant',
             position: 'left',
+          },
+          {
+            to: '/auth/login',
+            label: 'Sign In',
+            position: 'right',
           },
           {
             href: 'https://github.com/Ahmedkhan1121/my-ai-book.git',
@@ -132,6 +137,18 @@ const config = {
 
   // Custom scripts
   scripts: [],
+
+  // Custom fields for development server configuration
+  customFields: {
+    devServer: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+        },
+      },
+    },
+  },
 };
 
 module.exports = config;

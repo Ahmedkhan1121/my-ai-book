@@ -1,46 +1,115 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
+import { motion, AnimatePresence } from 'framer-motion';
+import AnimatedSection from '../components/AnimatedSection';
+import AnimatedCard from '../components/AnimatedCard';
 import styles from './ai-chatbot.module.css';
 
-// Sample responses for the chatbot
-const sampleResponses = {
-  'hello': 'Hello! I\'m your AI Robotics assistant. How can I help you today?',
-  'hi': 'Hi there! I\'m here to answer your questions about AI robotics, Physical AI, ROS, humanoid robots, and more.',
-  'what is physical ai': 'Physical AI represents the intersection of artificial intelligence and physical systems. It encompasses the development of intelligent systems that can perceive, reason, and act in the physical world, combining robotics, computer vision, machine learning, and control theory.',
-  'what is ros': 'ROS (Robot Operating System) is a flexible framework for writing robot software. It provides services designed for a heterogeneous computer cluster including hardware abstraction, device drivers, libraries, visualizers, message-passing, package management, and more.',
-  'humanoid robotics': 'Humanoid robotics is a specialized field focusing on creating robots with human-like characteristics and capabilities. These robots are designed to operate in human environments and interact with humans naturally.',
-  'digital twin': 'A digital twin is a virtual representation of a physical object or system that spans its lifecycle. In robotics, it includes physical models, behavioral models, environmental models, sensor models, and control models.',
-  'vision language action': 'Vision-Language-Action (VLA) systems integrate visual perception, natural language understanding, and physical action in a unified framework, enabling robots to understand human instructions and execute appropriate actions.',
-  'capstone project': 'The capstone project demonstrates a complete AI-robot pipeline integrating Physical AI, ROS 2, digital twin simulation, and Vision-Language-Action systems into a working demonstration.',
-  'help': 'I can help you with questions about AI robotics, Physical AI, ROS 2, humanoid robotics, digital twin simulation, Vision-Language-Action systems, and our textbook content. Try asking about any of these topics!',
-  'default': 'I\'m an AI Robotics assistant. I can help you with questions about Physical AI, ROS 2, humanoid robotics, digital twin simulation, and Vision-Language-Action systems. Could you please rephrase your question or ask about one of these topics?'
+// API configuration
+const API_BASE_URL = typeof window !== 'undefined'
+  ? `${window.location.origin}/api`
+  : process.env.API_BASE_URL || 'http://localhost:8000/api';
+
+// Function to send query to backend RAG API
+const sendQueryToBackend = async (query, sessionId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/query`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: query,
+        session_id: sessionId,
+        include_citations: true
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error sending query to backend:', error);
+    // Return a fallback response if API fails
+    return {
+      response: "I'm having trouble connecting to the AI backend. Please try again later.",
+      citations: [],
+      query_id: 'fallback'
+    };
+  }
 };
 
 function ChatHeader() {
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
+    <AnimatedSection className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        <h1 className="hero__title">AI Robotics Assistant</h1>
-        <p className="hero__subtitle">Ask questions about Physical AI, Robotics, ROS 2, and more</p>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h1 className="hero__title text-4xl md:text-5xl font-bold mb-4">
+            AI Robotics Assistant
+          </h1>
+          <p className="hero__subtitle text-xl md:text-2xl text-gray-700">
+            Ask questions about Physical AI, Robotics, ROS 2, and more
+          </p>
+        </motion.div>
       </div>
-    </header>
+    </AnimatedSection>
   );
 }
 
-function Message({ text, isUser, timestamp }) {
+function Message({ text, isUser, timestamp, citations }) {
   return (
-    <div className={clsx(styles.message, {
-      [styles.userMessage]: isUser,
-      [styles.botMessage]: !isUser
-    })}>
-      <div className={styles.messageContent}>
-        {text}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`mb-4 flex ${isUser ? 'justify-end' : 'justify-start'}`}
+    >
+      <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+        isUser
+          ? 'bg-blue-600 text-white rounded-br-none'
+          : 'bg-gray-100 text-gray-800 rounded-bl-none'
+      }`}>
+        <div className="text-sm leading-relaxed">{text}</div>
+
+        {/* Display citations for bot messages */}
+        {!isUser && citations && citations.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-gray-200">
+            <details className="group">
+              <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700 flex items-center">
+                <span>Sources ({citations.length})</span>
+                <svg
+                  className="w-3 h-3 ml-1 transition-transform duration-200 group-open:rotate-180"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div className="mt-2 space-y-2">
+                {citations.map((citation, index) => (
+                  <div key={index} className="text-xs bg-blue-50 p-2 rounded border border-blue-100">
+                    <strong className="text-blue-800">{citation.chapter_title}</strong>: {citation.content_preview}
+                  </div>
+                ))}
+              </div>
+            </details>
+          </div>
+        )}
+
+        <div className={`text-xs mt-2 ${isUser ? 'text-blue-100' : 'text-gray-500'} text-right`}>
+          {timestamp}
+        </div>
       </div>
-      <div className={styles.messageTimestamp}>
-        {timestamp}
-      </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -64,21 +133,21 @@ function ChatInput({ onSendMessage, disabled }) {
   };
 
   return (
-    <form className={styles.chatInputForm} onSubmit={handleSubmit}>
-      <div className={styles.inputContainer}>
+    <form className="mt-4" onSubmit={handleSubmit}>
+      <div className="flex gap-2">
         <textarea
           ref={inputRef}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask me anything about AI Robotics, Physical AI, ROS 2, Humanoid Robotics..."
-          className={styles.chatInput}
+          className="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none min-h-[44px] max-h-32"
           disabled={disabled}
           rows={1}
         />
         <button
           type="submit"
-          className={styles.sendButton}
+          className="bg-blue-600 text-white rounded-xl px-4 flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           disabled={disabled || !inputValue.trim()}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -101,13 +170,13 @@ function ChatSuggestions({ onSuggestionClick }) {
   ];
 
   return (
-    <div className={styles.suggestions}>
-      <h3 className={styles.suggestionsTitle}>Try asking:</h3>
-      <div className={styles.suggestionsList}>
+    <div className="mb-6">
+      <h3 className="text-sm font-medium text-gray-500 mb-3">Try asking:</h3>
+      <div className="flex flex-wrap gap-2">
         {suggestions.map((suggestion, index) => (
           <button
             key={index}
-            className={styles.suggestionButton}
+            className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm hover:bg-gray-200 transition-colors duration-200"
             onClick={() => onSuggestionClick(suggestion)}
           >
             {suggestion}
@@ -129,6 +198,7 @@ function ChatPage() {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const sessionId = useRef(`session_${Date.now()}`).current; // Generate unique session ID
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -138,39 +208,7 @@ function ChatPage() {
     scrollToBottom();
   }, [messages]);
 
-  const processMessage = (text) => {
-    const lowerText = text.toLowerCase();
-
-    // Check for specific keywords in the message
-    if (lowerText.includes('physical ai') || lowerText.includes('physical ai')) {
-      return sampleResponses['what is physical ai'];
-    } else if (lowerText.includes('ros') || lowerText.includes('robot operating system')) {
-      return sampleResponses['what is ros'];
-    } else if (lowerText.includes('humanoid') || lowerText.includes('human like')) {
-      return sampleResponses['humanoid robotics'];
-    } else if (lowerText.includes('digital twin') || lowerText.includes('simulation')) {
-      return sampleResponses['digital twin'];
-    } else if (lowerText.includes('vision') || lowerText.includes('language') || lowerText.includes('action')) {
-      return sampleResponses['vision language action'];
-    } else if (lowerText.includes('capstone') || lowerText.includes('project')) {
-      return sampleResponses['capstone project'];
-    } else if (lowerText.includes('hello') || lowerText.includes('hi') || lowerText.includes('hey')) {
-      return sampleResponses['hello'];
-    } else if (lowerText.includes('help') || lowerText.includes('what can you do')) {
-      return sampleResponses['help'];
-    }
-
-    // Check for exact matches in sample responses
-    for (const [key, response] of Object.entries(sampleResponses)) {
-      if (lowerText.includes(key) && key !== 'default' && key !== 'help') {
-        return response;
-      }
-    }
-
-    return sampleResponses['default'];
-  };
-
-  const handleSendMessage = (text) => {
+  const handleSendMessage = async (text) => {
     // Add user message
     const userMessage = {
       id: Date.now(),
@@ -182,19 +220,31 @@ function ChatPage() {
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
-    // Simulate bot response with delay
-    setTimeout(() => {
-      const botResponse = processMessage(text);
+    try {
+      // Send query to backend RAG API
+      const response = await sendQueryToBackend(text, sessionId);
+
       const botMessage = {
         id: Date.now() + 1,
-        text: botResponse,
+        text: response.response,
         isUser: false,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        citations: response.citations || []
       };
 
       setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Error getting response:', error);
+      const errorMessage = {
+        id: Date.now() + 1,
+        text: "Sorry, I encountered an error processing your request. Please try again.",
+        isUser: false,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleSuggestionClick = (suggestion) => {
@@ -204,57 +254,90 @@ function ChatPage() {
   return (
     <Layout title="AI Robotics Chatbot" description="Interactive AI assistant for AI robotics questions">
       <ChatHeader />
-      <main className={clsx(styles.chatPage, 'container', 'margin-vert--lg')}>
-        <div className={styles.chatContainer}>
-          <div className={styles.chatMessages}>
-            {messages.map((message) => (
-              <Message
-                key={message.id}
-                text={message.text}
-                isUser={message.isUser}
-                timestamp={message.timestamp}
-              />
-            ))}
-            {isLoading && (
-              <div className={clsx(styles.message, styles.botMessage)}>
-                <div className={styles.messageContent}>
-                  <div className={styles.typingIndicator}>
-                    <div className={styles.typingDot}></div>
-                    <div className={styles.typingDot}></div>
-                    <div className={styles.typingDot}></div>
-                  </div>
+      <main className="py-8">
+        <div className="container px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-3">
+              <AnimatedCard className="h-[600px] flex flex-col">
+                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                  <AnimatePresence>
+                    {messages.map((message) => (
+                      <Message
+                        key={message.id}
+                        text={message.text}
+                        isUser={message.isUser}
+                        timestamp={message.timestamp}
+                        citations={message.citations}
+                      />
+                    ))}
+                  </AnimatePresence>
+                  {isLoading && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex justify-start mb-4"
+                    >
+                      <div className="bg-gray-100 text-gray-800 rounded-2xl px-4 py-3 rounded-bl-none">
+                        <div className="flex items-center space-x-2">
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                  <div ref={messagesEndRef} />
                 </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
 
-          <div className={styles.chatInputArea}>
-            <ChatSuggestions onSuggestionClick={handleSuggestionClick} />
-            <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
-          </div>
-        </div>
+                <div className="p-6 border-t border-gray-100">
+                  <ChatSuggestions onSuggestionClick={handleSuggestionClick} />
+                  <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
+                </div>
+              </AnimatedCard>
+            </div>
 
-        <div className={styles.infoSection}>
-          <div className={styles.infoCard}>
-            <h3 className={styles.infoTitle}>About This Assistant</h3>
-            <p className={styles.infoText}>
-              This AI Robotics assistant is designed to help you learn about Physical AI,
-              ROS 2, humanoid robotics, digital twin simulation, and Vision-Language-Action systems.
-              Ask questions about any of these topics to get detailed explanations.
-            </p>
-          </div>
+            <div className="lg:col-span-1 space-y-6">
+              <AnimatedCard className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">About This Assistant</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  This AI Robotics assistant is designed to help you learn about Physical AI,
+                  ROS 2, humanoid robotics, digital twin simulation, and Vision-Language-Action systems.
+                  Ask questions about any of these topics to get detailed explanations.
+                </p>
+              </AnimatedCard>
 
-          <div className={styles.infoCard}>
-            <h3 className={styles.infoTitle}>Topics Covered</h3>
-            <ul className={styles.topicsList}>
-              <li>• Physical AI fundamentals</li>
-              <li>• ROS 2 architecture and components</li>
-              <li>• Humanoid robotics design principles</li>
-              <li>• Digital twin simulation (Gazebo + Isaac)</li>
-              <li>• Vision-Language-Action systems</li>
-              <li>• AI-robot pipeline integration</li>
-            </ul>
+              <AnimatedCard className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Topics Covered</h3>
+                <ul className="space-y-2">
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2">•</span>
+                    <span className="text-gray-700">Physical AI fundamentals</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2">•</span>
+                    <span className="text-gray-700">ROS 2 architecture and components</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2">•</span>
+                    <span className="text-gray-700">Humanoid robotics design principles</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2">•</span>
+                    <span className="text-gray-700">Digital twin simulation (Gazebo + Isaac)</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2">•</span>
+                    <span className="text-gray-700">Vision-Language-Action systems</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2">•</span>
+                    <span className="text-gray-700">AI-robot pipeline integration</span>
+                  </li>
+                </ul>
+              </AnimatedCard>
+            </div>
           </div>
         </div>
       </main>

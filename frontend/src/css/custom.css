@@ -5,16 +5,107 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-/* You can override the default Docusaurus styling here. */
+/* Modern professional theme */
 :root {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --ifm-code-font-size: 95%;
+  /* Primary colors - Teal/Aqua theme */
+  --ifm-color-primary: #0ea5e9;        /* Modern teal-blue */
+  --ifm-color-primary-dark: #0284c7;   /* Darker teal-blue */
+  --ifm-color-primary-darker: #0369a1; /* Even darker teal-blue */
+  --ifm-color-primary-darkest: #0c4a6e; /* Darkest teal-blue */
+  --ifm-color-primary-light: #38bdf8;  /* Lighter teal-blue */
+  --ifm-color-primary-lighter: #7dd3fc; /* Lightest teal-blue */
+  --ifm-color-primary-lightest: #bae6fd; /* Lightest teal-blue */
+
+  /* Secondary colors - Purple accent */
+  --ifm-color-secondary: #8b5cf6;      /* Modern purple */
+  --ifm-color-secondary-dark: #7c3aed; /* Darker purple */
+  --ifm-color-secondary-darker: #6d28d9; /* Even darker purple */
+  --ifm-color-secondary-light: #a78bfa; /* Light purple */
+  --ifm-color-secondary-lighter: #c4b5fd; /* Lightest purple */
+
+  /* Neutral colors */
+  --ifm-color-gray-50: #f8fafc;        /* Very light gray */
+  --ifm-color-gray-100: #f1f5f9;       /* Light gray */
+  --ifm-color-gray-200: #e2e8f0;       /* Lighter gray */
+  --ifm-color-gray-300: #cbd5e1;       /* Light-medium gray */
+  --ifm-color-gray-400: #94a3b8;       /* Medium gray */
+  --ifm-color-gray-500: #64748b;       /* Medium-dark gray */
+  --ifm-color-gray-600: #475569;       /* Gray */
+  --ifm-color-gray-700: #334155;       /* Dark gray */
+  --ifm-color-gray-800: #1e293b;       /* Darker gray */
+  --ifm-color-gray-900: #0f172a;       /* Darkest gray */
+
+  /* Background colors */
+  --ifm-color-background: #f8fafc;     /* Clean background */
+  --ifm-color-surface: #ffffff;        /* Card surfaces */
+  --ifm-color-surface-elevated: #ffffff; /* Elevated surfaces */
+  --ifm-color-surface-overlay: rgba(255, 255, 255, 0.95); /* Overlays */
+
+  /* Text colors */
+  --ifm-color-text-primary: #1e293b;   /* Dark text */
+  --ifm-color-text-secondary: #64748b; /* Secondary text */
+  --ifm-color-text-muted: #94a3b8;     /* Muted text */
+  --ifm-color-text-inverted: #ffffff;  /* White text on dark */
+
+  /* Border colors */
+  --ifm-color-border: #e2e8f0;         /* Default border */
+  --ifm-color-border-light: #f1f5f9;   /* Light border */
+  --ifm-color-border-heavy: #cbd5e1;   /* Heavy border */
+
+  /* Status colors */
+  --ifm-color-success: #10b981;        /* Success/green */
+  --ifm-color-success-dark: #059669;   /* Darker green */
+  --ifm-color-warning: #f59e0b;        /* Warning/yellow */
+  --ifm-color-warning-dark: #d97706;   /* Darker yellow */
+  --ifm-color-danger: #ef4444;         /* Danger/red */
+  --ifm-color-danger-dark: #dc2626;    /* Darker red */
+
+  /* Spacing system */
+  --ifm-spacing-xs: 0.25rem;           /* 4px */
+  --ifm-spacing-sm: 0.5rem;            /* 8px */
+  --ifm-spacing-md: 1rem;              /* 16px */
+  --ifm-spacing-lg: 1.5rem;            /* 24px */
+  --ifm-spacing-xl: 2rem;              /* 32px */
+  --ifm-spacing-2xl: 3rem;             /* 48px */
+  --ifm-spacing-3xl: 4rem;             /* 64px */
+
+  /* Border radius */
+  --ifm-radius-sm: 0.25rem;            /* Small radius */
+  --ifm-radius-md: 0.5rem;             /* Medium radius */
+  --ifm-radius-lg: 0.75rem;            /* Large radius */
+  --ifm-radius-xl: 1rem;               /* Extra large radius */
+  --ifm-radius-2xl: 1.5rem;            /* 2x large radius */
+  --ifm-radius-full: 9999px;           /* Full circle */
+
+  /* Shadows */
+  --ifm-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --ifm-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --ifm-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --ifm-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Typography */
+  --ifm-font-size-xs: 0.75rem;         /* 12px */
+  --ifm-font-size-sm: 0.875rem;        /* 14px */
+  --ifm-font-size-base: 1rem;          /* 16px */
+  --ifm-font-size-lg: 1.125rem;        /* 18px */
+  --ifm-font-size-xl: 1.25rem;         /* 20px */
+  --ifm-font-size-2xl: 1.5rem;         /* 24px */
+  --ifm-font-size-3xl: 1.875rem;       /* 30px */
+  --ifm-font-size-4xl: 2.25rem;        /* 36px */
+  --ifm-font-size-5xl: 3rem;           /* 48px */
+  --ifm-font-size-6xl: 3.75rem;        /* 60px */
+
+  --ifm-line-height-tight: 1.25;
+  --ifm-line-height-snug: 1.375;
+  --ifm-line-height-normal: 1.5;
+  --ifm-line-height-relaxed: 1.625;
+
+  --ifm-code-font-size: 0.875em;
+
+  /* Animation */
+  --ifm-transition-ease: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --ifm-transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --ifm-transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Custom styling for textbook */
